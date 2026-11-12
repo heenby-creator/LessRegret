@@ -77,6 +77,13 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [copied, setCopied] = useState(false);
   const deckRef = useRef<HTMLDivElement>(null);
+  const backScrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (backScrollRef.current) {
+      backScrollRef.current.scrollTop = 0;
+    }
+  }, [currentIndex, isFlipped]);
 
   const filteredCards = useMemo(
     () => (selectedCat === 'all' ? cards : cards.filter((c) => c.categorySlug === selectedCat)),
@@ -150,28 +157,58 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
       : `https://lessregret.life/${lang}/card/${card.id}`;
 
   const handleShare = async (event: React.MouseEvent) => {
+    event.preventDefault();
     event.stopPropagation();
-    const shareData = {
-      title: isKo ? `후회가 적은 삶 · ${card.title.replace('\n', ' ')}` : `Less Regret · ${card.titleEn.replace('\n', ' ')}`,
-      text: isKo ? quoteOf(card, lang) : quoteOf(card, lang),
-      url: shareUrl,
-    };
-    if (typeof navigator !== 'undefined' && navigator.share) {
+    const shareTitle = isKo
+      ? `후회가 적은 삶 · ${card.title.replace('\n', ' ')}`
+      : `Less Regret · ${card.titleEn.replace('\n', ' ')}`;
+    const shareText = isKo ? quoteOf(card, lang) : quoteOf(card, lang);
+
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
       try {
-        await navigator.share(shareData);
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl,
+        });
         return;
-      } catch {
-        /* 사용자가 취소했거나 공유를 지원하지 않음 → 복사로 대체 */
+      } catch (err: unknown) {
+        if (err && typeof err === 'object' && 'name' in err && (err as { name: string }).name === 'AbortError') {
+          return;
+        }
       }
     }
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+
+    let copiedSuccess = false;
+    if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
       try {
         await navigator.clipboard.writeText(shareUrl);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        copiedSuccess = true;
       } catch {
-        /* clipboard 권한 없음 */
+        copiedSuccess = false;
       }
+    }
+
+    if (!copiedSuccess && typeof document !== 'undefined') {
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = shareUrl;
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-9999px';
+        textarea.style.top = '0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        copiedSuccess = document.execCommand('copy');
+        document.body.removeChild(textarea);
+      } catch {
+        copiedSuccess = false;
+      }
+    }
+
+    if (copiedSuccess) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2200);
     }
   };
 
@@ -220,16 +257,21 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
           {/* ── 앞면: 후킹 + 최소 출처 ── */}
           <div
             role="button"
-            tabIndex={0}
+            tabIndex={isFlipped ? -1 : 0}
             aria-label={isKo ? '카드를 눌러 이야기 보기' : 'Tap to read the story'}
-            onClick={() => setIsFlipped(true)}
+            aria-hidden={isFlipped}
+            onClick={() => !isFlipped && setIsFlipped(true)}
             onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
+              if (!isFlipped && (event.key === 'Enter' || event.key === ' ')) {
                 event.preventDefault();
                 setIsFlipped(true);
               }
             }}
-            className="absolute inset-0 w-full h-full rounded-[22px] backface-hidden overflow-hidden border shadow-[0_18px_50px_-24px_rgba(26,24,22,0.55)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accentGold"
+            className={`absolute inset-0 w-full h-full rounded-[22px] backface-hidden overflow-hidden border shadow-[0_18px_50px_-24px_rgba(26,24,22,0.55)] focus:outline-none focus-visible:ring-2 focus-visible:ring-accentGold transition-all duration-300 ${
+              isFlipped
+                ? 'pointer-events-none select-none invisible opacity-0 z-0'
+                : 'pointer-events-auto visible opacity-100 z-10 cursor-pointer'
+            }`}
             style={{
               background: frontBackground,
               backgroundSize: isCareer || isCouple ? 'cover' : 'auto',
@@ -295,10 +337,14 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
 
           {/* ── 뒷면: 스토리 + 인용 + 실천 ── */}
           <div
-            className="absolute inset-0 w-full h-full rounded-[22px] backface-hidden rotate-y-180 bg-paper border border-borderSoft shadow-[0_18px_50px_-24px_rgba(26,24,22,0.45)] overflow-hidden flex flex-col"
+            className={`absolute inset-0 w-full h-full rounded-[22px] backface-hidden rotate-y-180 bg-paper border border-borderSoft shadow-[0_18px_50px_-24px_rgba(26,24,22,0.45)] overflow-hidden flex flex-col transition-all duration-300 ${
+              isFlipped
+                ? 'pointer-events-auto visible opacity-100 z-10'
+                : 'pointer-events-none select-none invisible opacity-0 z-0'
+            }`}
             aria-hidden={!isFlipped}
           >
-            <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-borderSoft/70">
+            <div className="shrink-0 flex items-center justify-between px-6 pt-4 sm:pt-5 pb-3 border-b border-borderSoft/70">
               <span className="text-[11px] font-mono tracking-wide text-accentGold font-semibold">
                 {isKo ? `이야기 #${card.id}` : `STORY #${card.id}`}
               </span>
@@ -307,17 +353,21 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
               </span>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-6 py-4">
-              <h3 className="font-serif text-[19px] leading-snug font-semibold text-ink mb-3 whitespace-pre-line">
+            <div
+              ref={backScrollRef}
+              className="flex-1 overflow-y-auto overscroll-contain px-5 sm:px-6 py-4 touch-pan-y"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
+              <h3 className="font-serif text-[18px] sm:text-[19px] leading-snug font-semibold text-ink mb-3 whitespace-pre-line">
                 {titleOf(card, lang)}
               </h3>
 
-              <p className="font-serif text-[14px] leading-[1.85] text-ink/85 whitespace-pre-line">
+              <p className="font-serif text-[13.5px] sm:text-[14px] leading-[1.85] text-ink/85 whitespace-pre-line">
                 {storyOf(card, lang)}
               </p>
 
-              <blockquote className="mt-5 pl-3.5 border-l-2 border-accentGold/70">
-                <p className="font-serif text-[13.5px] leading-[1.75] text-ink/80 italic">
+              <blockquote className="mt-4 sm:mt-5 pl-3.5 border-l-2 border-accentGold/70">
+                <p className="font-serif text-[13px] sm:text-[13.5px] leading-[1.75] text-ink/80 italic">
                   {quoteOf(card, lang)}
                 </p>
                 <cite className="mt-2 block text-[11px] not-italic text-inkFaint">
@@ -325,18 +375,18 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
                 </cite>
               </blockquote>
 
-              <div className="mt-5 rounded-xl bg-paperMuted/60 border border-borderSoft px-4 py-3.5">
-                <p className="text-[10.5px] tracking-wide text-accentGold font-semibold mb-1.5">
+              <div className="mt-4 sm:mt-5 rounded-xl bg-paperMuted/60 border border-borderSoft px-4 py-3">
+                <p className="text-[10.5px] tracking-wide text-accentGold font-semibold mb-1">
                   {isKo ? '오늘의 실천' : 'TODAY’S PRACTICE'}
                 </p>
-                <p className="text-[13px] leading-relaxed text-ink/90">{practiceOf(card, lang)}</p>
+                <p className="text-[12.5px] sm:text-[13px] leading-relaxed text-ink/90">{practiceOf(card, lang)}</p>
               </div>
 
-              <div className="flex flex-wrap gap-1.5 mt-4">
+              <div className="flex flex-wrap gap-1.5 mt-3.5 pb-2">
                 {tagsOf(card, lang).map((tag) => (
                   <span
                     key={tag}
-                    className="text-[11px] bg-paperMuted text-inkMuted px-2.5 py-1 rounded-md"
+                    className="text-[10.5px] sm:text-[11px] bg-paperMuted text-inkMuted px-2.5 py-1 rounded-md"
                   >
                     #{tag}
                   </span>
@@ -344,7 +394,7 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
               </div>
             </div>
 
-            <div className="px-5 py-3 border-t border-borderSoft/70 flex items-center justify-between gap-2 bg-paper">
+            <div className="shrink-0 px-5 py-3 border-t border-borderSoft/70 flex items-center justify-between gap-2 bg-paper">
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
