@@ -8,7 +8,7 @@ export default function HomePage({ params }: { params: { lang: string } }) {
     <div className="flex-1 flex flex-col">
       <section className="max-w-xl mx-auto w-full px-6 pt-7 pb-1">
         <p className="text-[10px] tracking-[0.2em] text-accentGold font-medium">
-          {isKo ? '57 CARDS · 6 CHAPTERS' : '57 CARDS · 6 CHAPTERS'}
+          {isKo ? '67 CARDS · 6 CHAPTERS' : '67 CARDS · 6 CHAPTERS'}
         </p>
         <h1 className="mt-2.5 font-serif text-[23px] sm:text-[26px] font-semibold leading-[1.45] text-ink whitespace-pre-line">
           {isKo ? '후회는 미리 보면\n조금 작아진다' : 'Regret gets smaller\nwhen you see it coming'}

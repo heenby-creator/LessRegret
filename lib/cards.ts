@@ -27,9 +27,12 @@ export interface Card {
   actionTagsKo: string[];
   actionTagsEn: string[];
   targetAge: string;
+  artifactPhoto?: string;
+  artifactPhotoCaptionKo?: string;
+  artifactPhotoCaptionEn?: string;
 }
 
-/** 카드 ID는 두 자리 숫자만 쓴다 ("01" ~ "57"). */
+/** 카드 ID는 두 자리 숫자만 쓴다 ("01" ~ "67"). */
 export const CARD_ID_PATTERN = /^\d{2}$/;
 
 /** 화면에 그리는 데 필요한 텍스트만 모은 타입 (클라이언트로 넘기는 payload). */
@@ -55,6 +58,9 @@ export type CardText = Pick<
   | 'oneLinerEn'
   | 'actionTagsKo'
   | 'actionTagsEn'
+  | 'artifactPhoto'
+  | 'artifactPhotoCaptionKo'
+  | 'artifactPhotoCaptionEn'
 >;
 
 export const cards = rawCards as Card[];
@@ -82,6 +88,9 @@ export function toDeckCards(list: Card[] = cards): CardText[] {
     oneLinerEn: card.oneLinerEn,
     actionTagsKo: card.actionTagsKo,
     actionTagsEn: card.actionTagsEn,
+    artifactPhoto: card.artifactPhoto,
+    artifactPhotoCaptionKo: card.artifactPhotoCaptionKo,
+    artifactPhotoCaptionEn: card.artifactPhotoCaptionEn,
   }));
 }
 
@@ -158,7 +167,7 @@ export function neighboursOf(card: Card): { prev: Card; next: Card } {
  */
 export function validateCards(list: Card[] = cards): string[] {
   const problems: string[] = [];
-  if (list.length !== 57) problems.push(`카드 수가 57장이 아니다: ${list.length}`);
+  if (list.length !== 67) problems.push(`카드 수가 67장이 아니다: ${list.length}`);
 
   const ids = new Set<string>();
   const titles = new Set<string>();

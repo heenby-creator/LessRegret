@@ -362,6 +362,37 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
                 {titleOf(card, lang)}
               </h3>
 
+              {card.artifactPhoto && (
+                <div className="mb-4 rounded-xl overflow-hidden border border-borderSoft shadow-sm bg-[#faf8f5]">
+                  <a
+                    href={card.artifactPhoto}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block relative group overflow-hidden"
+                    title={isKo ? '새 창에서 원본 크게 보기' : 'Open original image in new tab'}
+                  >
+                    <img
+                      src={card.artifactPhoto}
+                      alt={isKo ? '육필 편지 원본' : 'Original handwritten letter'}
+                      className="w-full object-cover max-h-[260px] object-top group-hover:scale-[1.02] transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <span className="px-3 py-1.5 rounded-full bg-black/75 text-white text-[11px] font-medium backdrop-blur-sm">
+                        {isKo ? '원본 편지 크게 보기 ↗' : 'View Full Image ↗'}
+                      </span>
+                    </div>
+                  </a>
+                  <div className="px-3.5 py-2 flex items-center justify-between text-[11px] text-inkFaint bg-paperMuted/60 border-t border-borderSoft/60">
+                    <span className="font-medium text-ink/75">
+                      {isKo ? (card.artifactPhotoCaptionKo || '육필 편지 원본') : (card.artifactPhotoCaptionEn || 'Original letter')}
+                    </span>
+                    <span className="text-[10px] text-accentGold font-medium">
+                      {isKo ? '터치하여 확대 ↗' : 'Tap to enlarge ↗'}
+                    </span>
+                  </div>
+                </div>
+              )}
+
               <p className="font-serif text-[13.5px] sm:text-[14px] leading-[1.85] text-ink/85 whitespace-pre-line">
                 {storyOf(card, lang)}
               </p>

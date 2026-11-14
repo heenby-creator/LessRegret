@@ -2,7 +2,7 @@
 /**
  * data/cards.json 무결성 검사.
  * 실행: npm run check:cards
- * 57장 · ID 두 자리 숫자 · 한/영 필드 분리 · 빈 인용 없음 을 보증한다.
+ * 67장 · ID 두 자리 숫자 · 한/영 필드 분리 · 빈 인용 없음 을 보증한다.
  */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -31,7 +31,7 @@ const EN_FIELDS = ['categoryEn', 'titleEn', 'storyEn', 'quoteEn', 'quoteAttrEn',
 const HANGUL = /[가-힣]/;
 
 const problems = [];
-if (cards.length !== 57) problems.push(`카드 수 ${cards.length} (57장이어야 함)`);
+if (cards.length < 67) problems.push(`카드 수 ${cards.length} (최소 67장 이상이어야 함)`);
 
 const ids = new Set();
 const titles = new Set();
@@ -81,5 +81,5 @@ if (problems.length) {
 
 const counts = {};
 for (const card of cards) counts[card.category] = (counts[card.category] ?? 0) + 1;
-console.log(`✅ 카드 ${cards.length}장 · ID 01–57 · 한/영 필드 분리 검증 통과`);
+console.log(`✅ 카드 ${cards.length}장 · ID 01–67 · 한/영 필드 분리 검증 통과`);
 console.log('   ' + Object.entries(counts).map(([k, v]) => `${k} ${v}`).join(' · '));

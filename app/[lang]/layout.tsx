@@ -10,10 +10,10 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: { params: { lang: string } }): Metadata {
   const isKo = params.lang === 'ko';
   return {
-    title: isKo ? '후회가 적은 삶 — 57장의 카드' : 'Less Regret — 57 cards',
+    title: isKo ? '후회가 적은 삶 — 67장의 카드' : 'Less Regret — 67 cards',
     description: isKo
-      ? '살아본 사람들이 먼저 후회한 57가지. 한 장씩 넘기며 오늘 할 수 있는 작은 실천을 만나보세요.'
-      : 'Fifty-seven regrets people named at the end. Flip one card at a time and leave with one small thing to do today.',
+      ? '살아본 사람들이 먼저 후회한 67가지. 한 장씩 넘기며 오늘 할 수 있는 작은 실천을 만나보세요.'
+      : 'Sixty-seven regrets people named at the end. Flip one card at a time and leave with one small thing to do today.',
     alternates: {
       canonical: `${SITE_URL}/${params.lang}`,
       languages: { ko: `${SITE_URL}/ko`, en: `${SITE_URL}/en` },
@@ -42,8 +42,8 @@ export default function LangLayout({
           </p>
           <p className="mt-1.5 text-[10.5px] leading-relaxed text-inkFaint">
             {isKo
-              ? '코넬대 레거시 프로젝트 · 다니엘 핑크 세계 후회 설문 · 하버드 성인발달연구'
-              : 'Cornell Legacy Project · Daniel Pink’s World Regret Survey · Harvard Study of Adult Development'}
+              ? '코넬대 레거시 프로젝트 · 다니엘 핑크 세계 후회 설문 · 하버드 성인발달연구 · 국가문해교육센터 시화전'
+              : 'Cornell Legacy Project · Daniel Pink’s World Regret Survey · Harvard Study of Adult Development · National Literacy Poetry Exhibition'}
           </p>
         </div>
       </footer>
