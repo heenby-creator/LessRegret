@@ -1,6 +1,41 @@
 [
   {
     "id": "01",
+    "category": "나·시간",
+    "categoryEn": "Self & Time",
+    "categorySlug": "self",
+    "regretType": "moral",
+    "regretTypeKo": "도덕 후회",
+    "regretTypeEn": "Moral Regret",
+    "title": "남이 원한 인생을 살면\n주인공이 없다",
+    "titleEn": "Live their life,\nand no one plays you",
+    "storyKo": "그녀는 부모가 원하는 대학에 갔고, 부모가 좋아한 사람과 결혼했고, 부모가 안심하는 직장에 다녔다. 나쁜 인생은 아니었다. 다만 쉰 살이 되던 날, 그녀는 거울 앞에서 문득 생각했다. '이 사람이 누구지.' 31년 동안 1만 명의 임종을 지켜본 호주 간호사 브로니 웨어가 기록한 가장 흔한 후회는 이것이었다. 남들이 기대하는 삶이 아니라, 나 자신에게 충실한 삶을 살 용기. 인생의 주인공을 남에게 맡기면, 마지막에 남는 것은 내 인생이 아니다.",
+    "storyEn": "She went to the university her parents wanted, married the person they approved of, took the job that reassured them. It wasn't a bad life. But on her fiftieth birthday she looked in the mirror and thought, Who is this? The most common regret Bronnie Ware recorded — from thirty-one years at the bedsides of the dying — was not having the courage to live a life true to yourself rather than the one others expected. Hand the lead role to someone else and the life that ends isn't yours.",
+    "quoteKo": "남들이 기대하는 삶이 아니라 나 자신에게 충실한 삶을 살 용기가 있었더라면.",
+    "quoteEn": "I wish I'd had the courage to live a life true to myself, not the life others expected of me.",
+    "quoteAttrKo": "브로니 웨어, 호주 호스피스 간호사 (가장 흔한 후회)",
+    "quoteAttrEn": "Bronnie Ware, Australian hospice nurse (the most common regret)",
+    "source": "브로니 웨어 「The Top Five Regrets of the Dying」",
+    "sourceEn": "Bronnie Ware, The Top Five Regrets of the Dying",
+    "sourceShortKo": "브로니 웨어 · 호스피스 간호 기록",
+    "sourceShortEn": "Bronnie Ware · hospice nurse's record",
+    "sourceUrl": "https://bronnieware.substack.com/p/the-top-five-regrets-of-the-dying",
+    "oneLiner": "오늘, '남이 기대해서' 하는 일 하나를 알아채고 이름을 붙여라.",
+    "oneLinerEn": "Today, notice one thing you do because it's expected — and name it.",
+    "actionTagsKo": [
+      "나답게",
+      "기대내려놓기",
+      "주인공"
+    ],
+    "actionTagsEn": [
+      "BeYourself",
+      "DropExpectations",
+      "LeadRole"
+    ],
+    "targetAge": "40대·50대"
+  },
+  {
+    "id": "02",
     "category": "사랑·결혼",
     "categoryEn": "Marriage & Love",
     "categorySlug": "love",
@@ -35,7 +70,7 @@
     "targetAge": "20대·30대"
   },
   {
-    "id": "02",
+    "id": "03",
     "category": "사랑·결혼",
     "categoryEn": "Marriage & Love",
     "categorySlug": "love",
@@ -70,7 +105,7 @@
     "targetAge": "20대·30대"
   },
   {
-    "id": "03",
+    "id": "04",
     "category": "사랑·결혼",
     "categoryEn": "Marriage & Love",
     "categorySlug": "love",
@@ -105,7 +140,7 @@
     "targetAge": "전 연령"
   },
   {
-    "id": "04",
+    "id": "05",
     "category": "사랑·결혼",
     "categoryEn": "Marriage & Love",
     "categorySlug": "love",
@@ -140,7 +175,7 @@
     "targetAge": "30대·40대"
   },
   {
-    "id": "05",
+    "id": "06",
     "category": "사랑·결혼",
     "categoryEn": "Marriage & Love",
     "categorySlug": "love",
@@ -175,7 +210,7 @@
     "targetAge": "전 연령"
   },
   {
-    "id": "06",
+    "id": "07",
     "category": "사랑·결혼",
     "categoryEn": "Marriage & Love",
     "categorySlug": "love",
@@ -210,7 +245,7 @@
     "targetAge": "전 연령"
   },
   {
-    "id": "07",
+    "id": "08",
     "category": "사랑·결혼",
     "categoryEn": "Marriage & Love",
     "categorySlug": "love",
@@ -245,7 +280,7 @@
     "targetAge": "전 연령"
   },
   {
-    "id": "08",
+    "id": "09",
     "category": "사랑·결혼",
     "categoryEn": "Marriage & Love",
     "categorySlug": "love",
@@ -280,7 +315,7 @@
     "targetAge": "전 연령"
   },
   {
-    "id": "09",
+    "id": "10",
     "category": "사랑·결혼",
     "categoryEn": "Marriage & Love",
     "categorySlug": "love",
@@ -315,7 +350,7 @@
     "targetAge": "30대·40대"
   },
   {
-    "id": "10",
+    "id": "11",
     "category": "사랑·결혼",
     "categoryEn": "Marriage & Love",
     "categorySlug": "love",
@@ -350,7 +385,7 @@
     "targetAge": "30대·40대"
   },
   {
-    "id": "11",
+    "id": "12",
     "category": "사랑·결혼",
     "categoryEn": "Marriage & Love",
     "categorySlug": "love",
@@ -385,7 +420,7 @@
     "targetAge": "전 연령"
   },
   {
-    "id": "12",
+    "id": "13",
     "category": "사랑·결혼",
     "categoryEn": "Marriage & Love",
     "categorySlug": "love",
@@ -420,7 +455,7 @@
     "targetAge": "20대·30대"
   },
   {
-    "id": "13",
+    "id": "14",
     "category": "일·커리어",
     "categoryEn": "Work & Career",
     "categorySlug": "work",
@@ -455,7 +490,7 @@
     "targetAge": "30대·40대"
   },
   {
-    "id": "14",
+    "id": "15",
     "category": "일·커리어",
     "categoryEn": "Work & Career",
     "categorySlug": "work",
@@ -490,7 +525,7 @@
     "targetAge": "30대·40대"
   },
   {
-    "id": "15",
+    "id": "16",
     "category": "일·커리어",
     "categoryEn": "Work & Career",
     "categorySlug": "work",
@@ -525,7 +560,7 @@
     "targetAge": "30대·40대"
   },
   {
-    "id": "16",
+    "id": "17",
     "category": "일·커리어",
     "categoryEn": "Work & Career",
     "categorySlug": "work",
@@ -560,7 +595,7 @@
     "targetAge": "30대·40대"
   },
   {
-    "id": "17",
+    "id": "18",
     "category": "일·커리어",
     "categoryEn": "Work & Career",
     "categorySlug": "work",
@@ -595,7 +630,7 @@
     "targetAge": "20대·30대"
   },
   {
-    "id": "18",
+    "id": "19",
     "category": "일·커리어",
     "categoryEn": "Work & Career",
     "categorySlug": "work",
@@ -630,7 +665,7 @@
     "targetAge": "40대·50대"
   },
   {
-    "id": "19",
+    "id": "20",
     "category": "일·커리어",
     "categoryEn": "Work & Career",
     "categorySlug": "work",
@@ -665,7 +700,7 @@
     "targetAge": "40대·50대"
   },
   {
-    "id": "20",
+    "id": "21",
     "category": "일·커리어",
     "categoryEn": "Work & Career",
     "categorySlug": "work",
@@ -700,7 +735,7 @@
     "targetAge": "30대·40대"
   },
   {
-    "id": "21",
+    "id": "22",
     "category": "돈·자산",
     "categoryEn": "Money & Wealth",
     "categorySlug": "money",
@@ -735,7 +770,7 @@
     "targetAge": "40대·50대"
   },
   {
-    "id": "22",
+    "id": "23",
     "category": "돈·자산",
     "categoryEn": "Money & Wealth",
     "categorySlug": "money",
@@ -770,7 +805,7 @@
     "targetAge": "30대·40대"
   },
   {
-    "id": "23",
+    "id": "24",
     "category": "돈·자산",
     "categoryEn": "Money & Wealth",
     "categorySlug": "money",
@@ -805,7 +840,7 @@
     "targetAge": "40대·50대"
   },
   {
-    "id": "24",
+    "id": "25",
     "category": "돈·자산",
     "categoryEn": "Money & Wealth",
     "categorySlug": "money",
@@ -840,7 +875,7 @@
     "targetAge": "40대·50대"
   },
   {
-    "id": "25",
+    "id": "26",
     "category": "돈·자산",
     "categoryEn": "Money & Wealth",
     "categorySlug": "money",
@@ -875,7 +910,7 @@
     "targetAge": "20대·30대"
   },
   {
-    "id": "26",
+    "id": "27",
     "category": "돈·자산",
     "categoryEn": "Money & Wealth",
     "categorySlug": "money",
@@ -910,7 +945,7 @@
     "targetAge": "40대·50대"
   },
   {
-    "id": "27",
+    "id": "28",
     "category": "돈·자산",
     "categoryEn": "Money & Wealth",
     "categorySlug": "money",
@@ -945,7 +980,7 @@
     "targetAge": "30대·40대"
   },
   {
-    "id": "28",
+    "id": "29",
     "category": "돈·자산",
     "categoryEn": "Money & Wealth",
     "categorySlug": "money",
@@ -980,7 +1015,7 @@
     "targetAge": "20대·30대"
   },
   {
-    "id": "29",
+    "id": "30",
     "category": "가족·친구",
     "categoryEn": "Family & Friends",
     "categorySlug": "family",
@@ -1015,7 +1050,7 @@
     "targetAge": "40대·50대"
   },
   {
-    "id": "30",
+    "id": "31",
     "category": "가족·친구",
     "categoryEn": "Family & Friends",
     "categorySlug": "family",
@@ -1050,7 +1085,7 @@
     "targetAge": "30대·40대"
   },
   {
-    "id": "31",
+    "id": "32",
     "category": "가족·친구",
     "categoryEn": "Family & Friends",
     "categorySlug": "family",
@@ -1085,7 +1120,7 @@
     "targetAge": "40대·50대"
   },
   {
-    "id": "32",
+    "id": "33",
     "category": "가족·친구",
     "categoryEn": "Family & Friends",
     "categorySlug": "family",
@@ -1120,7 +1155,7 @@
     "targetAge": "30대·40대"
   },
   {
-    "id": "33",
+    "id": "34",
     "category": "가족·친구",
     "categoryEn": "Family & Friends",
     "categorySlug": "family",
@@ -1155,7 +1190,7 @@
     "targetAge": "50대·60대"
   },
   {
-    "id": "34",
+    "id": "35",
     "category": "가족·친구",
     "categoryEn": "Family & Friends",
     "categorySlug": "family",
@@ -1190,7 +1225,7 @@
     "targetAge": "40대·50대"
   },
   {
-    "id": "35",
+    "id": "36",
     "category": "가족·친구",
     "categoryEn": "Family & Friends",
     "categorySlug": "family",
@@ -1225,7 +1260,7 @@
     "targetAge": "30대·40대"
   },
   {
-    "id": "36",
+    "id": "37",
     "category": "가족·친구",
     "categoryEn": "Family & Friends",
     "categorySlug": "family",
@@ -1260,7 +1295,7 @@
     "targetAge": "30대·40대"
   },
   {
-    "id": "37",
+    "id": "38",
     "category": "가족·친구",
     "categoryEn": "Family & Friends",
     "categorySlug": "family",
@@ -1295,7 +1330,7 @@
     "targetAge": "전 연령"
   },
   {
-    "id": "38",
+    "id": "39",
     "category": "가족·친구",
     "categoryEn": "Family & Friends",
     "categorySlug": "family",
@@ -1330,7 +1365,7 @@
     "targetAge": "40대·50대"
   },
   {
-    "id": "39",
+    "id": "40",
     "category": "가족·친구",
     "categoryEn": "Family & Friends",
     "categorySlug": "family",
@@ -1365,7 +1400,7 @@
     "targetAge": "전 연령"
   },
   {
-    "id": "40",
+    "id": "41",
     "category": "가족·친구",
     "categoryEn": "Family & Friends",
     "categorySlug": "family",
@@ -1400,7 +1435,7 @@
     "targetAge": "40대·50대"
   },
   {
-    "id": "41",
+    "id": "42",
     "category": "몸·마음",
     "categoryEn": "Body & Mind",
     "categorySlug": "body",
@@ -1435,7 +1470,7 @@
     "targetAge": "40대·50대"
   },
   {
-    "id": "42",
+    "id": "43",
     "category": "몸·마음",
     "categoryEn": "Body & Mind",
     "categorySlug": "body",
@@ -1470,7 +1505,7 @@
     "targetAge": "50대·60대"
   },
   {
-    "id": "43",
+    "id": "44",
     "category": "몸·마음",
     "categoryEn": "Body & Mind",
     "categorySlug": "body",
@@ -1505,7 +1540,7 @@
     "targetAge": "40대·50대"
   },
   {
-    "id": "44",
+    "id": "45",
     "category": "몸·마음",
     "categoryEn": "Body & Mind",
     "categorySlug": "body",
@@ -1540,7 +1575,7 @@
     "targetAge": "50대·60대"
   },
   {
-    "id": "45",
+    "id": "46",
     "category": "몸·마음",
     "categoryEn": "Body & Mind",
     "categorySlug": "body",
@@ -1575,7 +1610,7 @@
     "targetAge": "40대·50대"
   },
   {
-    "id": "46",
+    "id": "47",
     "category": "몸·마음",
     "categoryEn": "Body & Mind",
     "categorySlug": "body",
@@ -1610,7 +1645,7 @@
     "targetAge": "전 연령"
   },
   {
-    "id": "47",
+    "id": "48",
     "category": "몸·마음",
     "categoryEn": "Body & Mind",
     "categorySlug": "body",
@@ -1645,7 +1680,7 @@
     "targetAge": "30대·40대"
   },
   {
-    "id": "48",
+    "id": "49",
     "category": "몸·마음",
     "categoryEn": "Body & Mind",
     "categorySlug": "body",
@@ -1676,41 +1711,6 @@
       "StrengthTraining",
       "TenReps",
       "Balance"
-    ],
-    "targetAge": "40대·50대"
-  },
-  {
-    "id": "49",
-    "category": "나·시간",
-    "categoryEn": "Self & Time",
-    "categorySlug": "self",
-    "regretType": "moral",
-    "regretTypeKo": "도덕 후회",
-    "regretTypeEn": "Moral Regret",
-    "title": "남이 원한 인생을 살면\n주인공이 없다",
-    "titleEn": "Live their life,\nand no one plays you",
-    "storyKo": "그녀는 부모가 원하는 대학에 갔고, 부모가 좋아한 사람과 결혼했고, 부모가 안심하는 직장에 다녔다. 나쁜 인생은 아니었다. 다만 쉰 살이 되던 날, 그녀는 거울 앞에서 문득 생각했다. '이 사람이 누구지.' 31년 동안 1만 명의 임종을 지켜본 호주 간호사 브로니 웨어가 기록한 가장 흔한 후회는 이것이었다. 남들이 기대하는 삶이 아니라, 나 자신에게 충실한 삶을 살 용기. 인생의 주인공을 남에게 맡기면, 마지막에 남는 것은 내 인생이 아니다.",
-    "storyEn": "She went to the university her parents wanted, married the person they approved of, took the job that reassured them. It wasn't a bad life. But on her fiftieth birthday she looked in the mirror and thought, Who is this? The most common regret Bronnie Ware recorded — from thirty-one years at the bedsides of the dying — was not having the courage to live a life true to yourself rather than the one others expected. Hand the lead role to someone else and the life that ends isn't yours.",
-    "quoteKo": "남들이 기대하는 삶이 아니라 나 자신에게 충실한 삶을 살 용기가 있었더라면.",
-    "quoteEn": "I wish I'd had the courage to live a life true to myself, not the life others expected of me.",
-    "quoteAttrKo": "브로니 웨어, 호주 호스피스 간호사 (가장 흔한 후회)",
-    "quoteAttrEn": "Bronnie Ware, Australian hospice nurse (the most common regret)",
-    "source": "브로니 웨어 「The Top Five Regrets of the Dying」",
-    "sourceEn": "Bronnie Ware, The Top Five Regrets of the Dying",
-    "sourceShortKo": "브로니 웨어 · 호스피스 간호 기록",
-    "sourceShortEn": "Bronnie Ware · hospice nurse's record",
-    "sourceUrl": "https://bronnieware.substack.com/p/the-top-five-regrets-of-the-dying",
-    "oneLiner": "오늘, '남이 기대해서' 하는 일 하나를 알아채고 이름을 붙여라.",
-    "oneLinerEn": "Today, notice one thing you do because it's expected — and name it.",
-    "actionTagsKo": [
-      "나답게",
-      "기대내려놓기",
-      "주인공"
-    ],
-    "actionTagsEn": [
-      "BeYourself",
-      "DropExpectations",
-      "LeadRole"
     ],
     "targetAge": "40대·50대"
   },
