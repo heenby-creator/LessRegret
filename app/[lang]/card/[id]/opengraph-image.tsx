@@ -4,6 +4,7 @@ import {
   OG_COLORS,
   OG_CONTENT_TYPE,
   OG_SIZE,
+  categoryArtDataUri,
   categoryLabelAndAccent,
   imageDataUri,
   loadOgFonts,
@@ -12,7 +13,8 @@ import {
 
 /**
  * 개별 카드 공유 미리보기 이미지.
- * 육필 편지 같은 artifactPhoto 가 있으면 그 사진을, 없으면 카드 번호 패널을 쓴다.
+ * 육필 편지 같은 artifactPhoto 가 있으면 그 사진을, 없으면 카테고리 점묘 일러스트를,
+ * 그림이 없는 돈·자산만 카드 번호 패널을 쓴다.
  */
 export const runtime = 'nodejs';
 
@@ -70,6 +72,11 @@ export default async function Image({ params }: { params: { lang: string; id: st
   const source = isKo ? card.sourceShortKo : card.sourceShortEn;
   const regretType = isKo ? card.regretTypeKo : card.regretTypeEn;
   const photo = card.artifactPhoto ? await imageDataUri(card.artifactPhoto) : null;
+  // 실물 사진이 없으면 카테고리 점묘 일러스트를 오른쪽 패널에 채운다(돈·자산은 그림이 없어 번호 패널).
+  const art = photo ? null : await categoryArtDataUri(card.categorySlug, lang);
+  const panelImage = photo ?? art;
+  // 그림은 아래쪽 인물·사물이 남도록 아래 기준으로 채운다.
+  const panelPosition = photo ? 'top center' : 'center bottom';
 
   return new ImageResponse(
     (
@@ -156,12 +163,40 @@ export default async function Image({ params }: { params: { lang: string; id: st
               boxShadow: '0 18px 44px -26px rgba(26,24,22,0.55)',
             }}
           >
-            {photo ? (
-              <img
-                src={photo}
-                alt=""
-                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }}
-              />
+            {panelImage ? (
+              <div style={{ position: 'relative', display: 'flex', width: '100%', height: '100%' }}>
+                <img
+                  src={panelImage}
+                  alt=""
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    objectPosition: panelPosition,
+                  }}
+                />
+                {/* 그림 위쪽 여백에만 후회 유형을 얹어 모티프를 가리지 않는다. */}
+                {!photo && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '22px 20px 40px',
+                      background:
+                        'linear-gradient(180deg, rgba(253,251,247,0.90) 0%, rgba(253,251,247,0.52) 58%, rgba(253,251,247,0) 100%)',
+                    }}
+                  >
+                    <div style={{ width: 16, height: 2, background: accent, marginRight: 9 }} />
+                    <div style={{ fontSize: 14, color: OG_COLORS.INK_MUTED, letterSpacing: '0.06em' }}>
+                      {regretType}
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : (
               <div
                 style={{

@@ -85,6 +85,32 @@ export async function imageDataUri(publicPath: string): Promise<string | null> {
   }
 }
 
+/**
+ * 카테고리별 점묘 일러스트 — 카드 앞면이 쓰는 것과 같은 자산.
+ * 사랑·결혼은 언어별 부부 그림({lang} 치환), 돈·자산은 사진 없이 숫자 모티프를 유지한다.
+ */
+const CATEGORY_ART: Record<string, string> = {
+  love: '/images/pointillism-couple-{lang}.jpg',
+  work: '/images/bg-career.jpg',
+  family: '/images/bg-family.jpg',
+  body: '/images/bg-health.jpg',
+  self: '/images/bg-self.jpg',
+};
+
+/** 카테고리 그림을 data URI 로 읽는다. 언어별 파일이 없으면 한국어판으로 대체한다. */
+export async function categoryArtDataUri(slug: string, lang: string): Promise<string | null> {
+  const template = CATEGORY_ART[slug];
+  if (!template) return null;
+  const localized = template.replace('{lang}', lang);
+  const fallback = template.replace('{lang}', 'ko');
+  const candidates = localized === fallback ? [localized] : [localized, fallback];
+  for (const candidate of candidates) {
+    const uri = await imageDataUri(candidate);
+    if (uri) return uri;
+  }
+  return null;
+}
+
 /** 카드 제목을 OG 용 줄 단위로 나눈다 (데이터의 줄바꿈 유지). */
 export function titleLines(title: string, maxLines = 3): string[] {
   return title
