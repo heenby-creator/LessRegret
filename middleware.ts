@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 const locales = ['ko', 'en'];
-const defaultLocale = 'ko';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -11,6 +10,9 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
     pathname.startsWith('/images') ||
+    pathname === '/icon' ||
+    pathname === '/apple-icon' ||
+    pathname === '/favicon.ico' ||
     pathname.includes('.')
   ) {
     return NextResponse.next();
@@ -30,5 +32,8 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|images|favicon.ico).*)'],
+  // 언어가 없는 경로만 리다이렉트한다. 정적 파일·이미지 메타데이터 라우트는 건드리지 않는다.
+  matcher: [
+    '/((?!api|_next/static|_next/image|images|icon|apple-icon|favicon\\.ico|sitemap\\.xml|robots\\.txt).*)',
+  ],
 };

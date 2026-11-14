@@ -19,8 +19,6 @@ import {
 } from '@/lib/cards';
 import { CATEGORIES, LOCALES, SITE_URL } from '@/lib/categories';
 
-export const dynamicParams = false;
-
 export function generateStaticParams() {
   const params: { lang: string; id: string }[] = [];
   for (const lang of LOCALES) {
@@ -57,6 +55,11 @@ export function generateMetadata({
       url: `${SITE_URL}/${params.lang}/card/${card.id}`,
       siteName: 'Less Regret',
       locale: isKo ? 'ko_KR' : 'en_US',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
     },
   };
 }
