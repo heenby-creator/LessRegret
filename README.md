@@ -90,4 +90,4 @@ public/images/               챕터별 점묘 배경(bg-career·family·health·
 - `components/Deck.tsx`, `components/ShareBar.tsx`, `components/SetHtmlLang.tsx`, **`components/HtmlLang.tsx`** (옛 카드 화면)
 - 최상위 `cards.json` (새 버전은 `data/cards.json` 만 사용)
 
-도메인: `NEXT_PUBLIC_SITE_URL` 환경변수로 canonical 주소를 바꿀 수 있다 (기본값 `https://lessregret.life`).
+도메인: `NEXT_PUBLIC_SITE_URL` 환경변수로 canonical 주소의 기준을 바꿀 수 있다 (기본값 `https://www.lessregret.life`). 값이 non-www(`https://lessregret.life`)로 들어와도 `lib/categories.ts` 의 `SITE_URL` 이 www 로 정규화한다 — non-www 는 308 리다이렉트를 타서 카톡 썸네일이 빠지기 때문이다.

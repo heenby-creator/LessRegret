@@ -12,7 +12,7 @@ import {
   Rows3,
   Share2,
 } from 'lucide-react';
-import { CATEGORIES, CATEGORY_BY_SLUG, type Category } from '@/lib/categories';
+import { CATEGORIES, CATEGORY_BY_SLUG, SITE_URL, type Category } from '@/lib/categories';
 import {
   type CardText,
   categoryOf,
@@ -239,10 +239,11 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
 
   const frontBackground = frontBackgroundFor(category.slug, isKo);
 
+  // 공유 URL 은 non-www → www 308 리다이렉트를 타지 않는 주소로 만든다.
   const shareUrl =
     typeof window !== 'undefined'
-      ? `${window.location.origin}/${lang}/card/${card.id}`
-      : `https://lessregret.life/${lang}/card/${card.id}`;
+      ? `${window.location.origin.replace('://lessregret.life', '://www.lessregret.life')}/${lang}/card/${card.id}`
+      : `${SITE_URL}/${lang}/card/${card.id}`;
 
   const handleShare = async (event: React.MouseEvent) => {
     event.preventDefault();
@@ -250,13 +251,13 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
     const shareTitle = isKo
       ? `후회가 적은 삶 · ${card.title.replace('\n', ' ')}`
       : `Less Regret · ${card.titleEn.replace('\n', ' ')}`;
-    const shareText = isKo ? quoteOf(card, lang) : quoteOf(card, lang);
 
     if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
       try {
+        // text 를 넘기면 카톡 말풍선에 인용문이 통째로 붙는다. 제목+URL 만 넘겨
+        // 수신 측이 OG 카드(제목·설명·썸네일)를 그리게 한다.
         await navigator.share({
           title: shareTitle,
-          text: shareText,
           url: shareUrl,
         });
         return;
