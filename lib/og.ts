@@ -59,13 +59,26 @@ export function loadOgFonts(): Promise<OgFont[]> {
   return fontCache;
 }
 
-/** 공개 이미지 파일을 data URI 로 읽는다 (없으면 null). */
+/**
+ * 공개 이미지 파일을 data URI 로 읽는다.
+ * 서버 번들에 파일이 함께 실려 있으면 디스크에서, 아니면(배포 환경) 사이트 URL 로 받아 온다.
+ */
 export async function imageDataUri(publicPath: string): Promise<string | null> {
+  const clean = publicPath.replace(/^\//, '');
+  const ext = clean.split('.').pop()?.toLowerCase() ?? 'jpg';
+  const mime = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg';
+
   try {
-    const clean = publicPath.replace(/^\//, '');
     const buffer = await readFile(join(process.cwd(), 'public', clean));
-    const ext = clean.split('.').pop()?.toLowerCase() ?? 'jpg';
-    const mime = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg';
+    return `data:${mime};base64,${buffer.toString('base64')}`;
+  } catch {
+    // 번들에 없는 배포 환경 — 같은 사이트의 공개 URL 에서 읽는다.
+  }
+
+  try {
+    const response = await fetch(absoluteUrl(publicPath));
+    if (!response.ok) return null;
+    const buffer = Buffer.from(await response.arrayBuffer());
     return `data:${mime};base64,${buffer.toString('base64')}`;
   } catch {
     return null;

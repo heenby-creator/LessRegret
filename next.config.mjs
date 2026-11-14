@@ -7,7 +7,7 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react'],
     // OG 이미지(ImageResponse)가 쓰는 한글 서브셋 폰트를 서버 번들에 포함한다.
     outputFileTracingIncludes: {
-      '/**/*': ['./assets/og-fonts/**/*'],
+      '/**/*': ['./assets/og-fonts/**/*', './public/images/**/*'],
     },
   },
 };

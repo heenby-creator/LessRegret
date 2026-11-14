@@ -304,9 +304,9 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
 
   return (
     <div ref={deckRef} className="w-full max-w-5xl mx-auto px-4 pt-5 pb-10">
-      {/* 카테고리 탭 + 보기 전환 */}
-      <div className="max-w-xl mx-auto w-full flex items-start gap-3 mb-4">
-        <div className="flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none">
+      {/* 카테고리 탭 */}
+      <div className="max-w-xl mx-auto w-full">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none md:flex-wrap md:overflow-visible">
           <button
             type="button"
             onClick={() => selectCategory('all')}
@@ -335,10 +335,21 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
             </button>
           ))}
         </div>
+      </div>
 
-        {/* PC: 덱 / 그리드 전환 */}
+      {/* PC: 보기 전환 + 키보드 안내 */}
+      <div className="hidden md:flex max-w-xl mx-auto w-full items-center justify-between gap-3 mb-4 mt-1">
+        <p className="text-[10.5px] text-inkFaint">
+          {viewMode === 'grid'
+            ? isKo
+              ? '카드를 누르면 그 카드의 이야기가 펼쳐집니다'
+              : 'Click a card to open its story'
+            : isKo
+            ? '← → 이전·다음 · Space 뒤집기 · G 그리드'
+            : '← → prev / next · Space to flip · G for grid'}
+        </p>
         <div
-          className="hidden md:flex shrink-0 items-center gap-0.5 rounded-full bg-paperMuted p-0.5 mb-2"
+          className="flex shrink-0 items-center gap-0.5 rounded-full bg-paperMuted p-0.5"
           role="group"
           aria-label={isKo ? '보기 방식' : 'View mode'}
         >
@@ -368,7 +379,7 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
       </div>
 
       {/* ── 덱 보기 ── */}
-      <div className={viewMode === 'grid' ? 'hidden md:block' : 'block'}>
+      <div className={viewMode === 'grid' ? 'hidden' : 'block'}>
         <div className="max-w-xl mx-auto w-full">
           <div className="relative">
             {/* PC: 카드 바깥 좌우 화살표 */}
@@ -646,11 +657,6 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
             {isKo
               ? '카드 앞면을 누르면 이야기가 펼쳐집니다 · 좌우 화살표로 넘길 수 있어요'
               : 'Tap the card to open the story · use the arrow keys to browse'}
-          </p>
-          <p className="mt-3 hidden md:block text-center text-[10.5px] text-inkFaint">
-            {isKo
-              ? '← → 이전·다음 카드 · Space 또는 Enter 로 앞뒤 뒤집기 · G 로 그리드 보기'
-              : '← → previous / next · Space or Enter to flip · G for the grid'}
           </p>
         </div>
       </div>
