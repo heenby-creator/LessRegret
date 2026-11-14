@@ -157,8 +157,11 @@ function ensureKakaoSdk(timeoutMs = 5000): Promise<KakaoSdk | null> {
       return;
     }
 
+    // Share 모듈은 init 이후에 붙으므로, 준비 판정은 init/isInitialized 만 본다.
     const ready = (): KakaoSdk | null =>
-      window.Kakao && typeof window.Kakao.init === 'function' && window.Kakao.Share
+      window.Kakao &&
+      typeof window.Kakao.init === 'function' &&
+      typeof window.Kakao.isInitialized === 'function'
         ? window.Kakao
         : null;
 
@@ -348,11 +351,16 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
 
     try {
       const kakao = await ensureKakaoSdk();
-      if (!kakao || !kakao.Share) {
+      if (!kakao) {
         await shareLink();
         return;
       }
       if (!kakao.isInitialized()) kakao.init(KAKAO_JS_KEY);
+      if (!kakao.Share) {
+        // 키·도메인 설정으로 Share 모듈이 붙지 않으면 링크 공유로 넘긴다.
+        await shareLink();
+        return;
+      }
 
       const kakaoTitle = clampText((isKo ? card.title : card.titleEn).replace(/\n/g, ' '), 60);
       const kakaoDescription = clampText(quoteOf(card, lang) || storyOf(card, lang), 80);
