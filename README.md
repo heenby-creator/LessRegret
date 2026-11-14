@@ -21,25 +21,36 @@ npm start
 
 ```
 app/
-  layout.tsx                 루트 레이아웃 (폰트, 메타데이터, metadataBase)
-  [lang]/layout.tsx          언어별 헤더·푸터·metadata
+  [lang]/layout.tsx          루트 레이아웃 — <html lang> 서버 렌더링 · 헤더·푸터·메타데이터
   [lang]/page.tsx            카드 덱 (히어로 + CardDeck)
   [lang]/card/[id]/page.tsx  카드 상세 (스토리·인용·출처·이전/다음)
+  [lang]/opengraph-image.tsx          홈 공유 이미지 (1200×630)
+  [lang]/card/[id]/opengraph-image.tsx 카드 공유 이미지 (사진이 있는 카드는 사진 포함)
+  [lang]/not-found.tsx       404
+  icon.tsx · apple-icon.tsx · favicon.ico   파비콘
   sitemap.ts                 ko/en + 카드 134개 = 136 URL
   robots.ts
 components/
-  CardDeck.tsx               6대 카테고리 탭 · 2단계 플립 · 공유 버튼
+  CardDeck.tsx               6대 카테고리 탭 · 2단계 플립 · 공유 버튼 · PC 덱/그리드 보기
   SiteHeader.tsx             Less Regret 로고(0.18em 간격) + 언어 전환
-  HtmlLang.tsx               <html lang> 동기화
 lib/
   categories.ts              6대 카테고리 정의 (slug·한/영·톤)
   cards.ts                   카드 타입·조회 헬퍼·데이터 검증
+  og.ts                      OG 이미지용 폰트 로더·색·헬퍼
+assets/og-fonts/             OG 이미지용 Noto Serif KR 서브셋 (400·600)
 data/
   cards.json                 67장 카드 원본 (id "01"~"67")
 scripts/
   check-cards.mjs            빌드 전 데이터 검증 (npm run check:cards)
-public/images/               점묘(부부) · 사진(커리어) 배경
+public/images/               챕터별 점묘 배경(bg-career·family·health·self, 부부) + 육필 편지 원본
 ```
+
+## OG 이미지 · 파비콘
+
+- `ImageResponse`(next/og, nodejs 런타임)로 1200×630 PNG를 만든다. 카드 이미지는 `generateImageMetadata` 로 카드별 alt 를 붙인다.
+- 한글이 깨지지 않도록 `assets/og-fonts/` 의 서브셋 폰트(KS X 1001 2,350자 + 라틴)를 쓴다. 폰트가 번들에 없으면 Google Fonts 원본을 받아 오고, 카드 사진이 번들에 없으면 공개 URL 에서 읽는다.
+- 새 카드를 추가해도 폰트 서브셋 범위(일상 한글) 안이면 그대로 렌더된다. 아주 드문 글자가 필요하면 `pyftsubset` 으로 서브셋을 다시 만들 것.
+- OG 이미지는 `/[lang]/opengraph-image`, `/[lang]/card/[id]/opengraph-image` 로 서비스되고, 카톡·X·페이스북 미리보기는 이 URL 의 `og:image` 를 쓴다.
 
 ## 카드 데이터 규칙
 
@@ -74,9 +85,9 @@ public/images/               점묘(부부) · 사진(커리어) 배경
 
 - `lib/cards.ts`, `lib/i18n.ts`, `lib/site.ts`, `lib/types.ts` (옛 카드 검증 코드 — `A1` 같은 ID를 오류로 판정)
 - `app/sitemap.ts`, `app/robots.ts` (옛 `lib/cards.ts` 를 불러다 씀) → 이번 버전 것으로 교체
-- `app/page.tsx`, `app/not-found.tsx` (옛 화면) → 이번 버전 것으로 교체
+- `app/page.tsx`, `app/not-found.tsx`, **`app/layout.tsx`** (옛 화면·옛 루트 레이아웃) → 이번 버전에는 없다. `<html>` 은 `app/[lang]/layout.tsx` 가 그린다
 - `app/[lang]/card/[id]/opengraph-image.tsx` (옛 공유 이미지 — `lib/cards.ts` 의존)
-- `components/Deck.tsx`, `components/ShareBar.tsx`, `components/SetHtmlLang.tsx` (옛 카드 화면)
+- `components/Deck.tsx`, `components/ShareBar.tsx`, `components/SetHtmlLang.tsx`, **`components/HtmlLang.tsx`** (옛 카드 화면)
 - 최상위 `cards.json` (새 버전은 `data/cards.json` 만 사용)
 
 도메인: `NEXT_PUBLIC_SITE_URL` 환경변수로 canonical 주소를 바꿀 수 있다 (기본값 `https://lessregret.life`).
