@@ -118,7 +118,7 @@ function frontBackgroundFor(slug: string, isKo: boolean): string {
   const photo = photoFor(slug, isKo);
   const category = CATEGORY_BY_SLUG[slug];
   if (!photo) return TONE_STYLES[category?.tone ?? 'warm'].background;
-  return `linear-gradient(178deg, rgba(253,250,240,0.96) 0%, rgba(253,250,240,0.91) 40%, rgba(252,248,240,0.68) 74%, rgba(252,248,240,0.36) 100%), url(${photo})`;
+  return `linear-gradient(178deg, rgba(253,250,240,0.94) 0%, rgba(253,250,240,0.87) 40%, rgba(252,248,240,0.58) 74%, rgba(252,248,240,0.24) 100%), url(${photo})`;
 }
 
 interface CardDeckProps {
@@ -705,7 +705,15 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
                   {titleOf(item, lang)}
                 </h3>
 
-                <div className="mt-auto pt-4 flex items-end justify-between gap-2">
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 bottom-0 h-16"
+                  style={{
+                    background:
+                      'linear-gradient(to top, rgba(253,250,240,0.95) 25%, rgba(253,250,240,0) 100%)',
+                  }}
+                />
+                <div className="relative mt-auto pt-4 flex items-end justify-between gap-2">
                   <span
                     className="text-[10.5px] leading-snug line-clamp-2"
                     style={{ color: itemPalette.muted }}
