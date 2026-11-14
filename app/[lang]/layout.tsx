@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 import '../globals.css';
 import SiteHeader from '@/components/SiteHeader';
 import { SITE_URL } from '@/lib/categories';
@@ -88,6 +89,12 @@ export default function LangLayout({
         <link
           href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600&family=Noto+Serif+KR:wght@300;400;500;600&display=swap"
           rel="stylesheet"
+        />
+        {/* 카카오톡 공유 — 공식 Kakao JS SDK v2. 공개용 JavaScript 키라 문서에 그대로 둔다. */}
+        <Script
+          src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"
+          strategy="afterInteractive"
+          crossOrigin="anonymous"
         />
       </head>
       <body className="bg-paper text-ink min-h-screen antialiased selection:bg-accentGold/30">

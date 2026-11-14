@@ -8,6 +8,7 @@ import {
   ArrowUpRight,
   Check,
   LayoutGrid,
+  MessageCircle,
   RotateCcw,
   Rows3,
   Share2,
@@ -128,12 +129,83 @@ interface CardDeckProps {
 
 type ViewMode = 'deck' | 'grid';
 
+/* ── 카카오톡 공유 (Kakao JS SDK v2) ─────────────────────────────
+ * JavaScript 키는 웹에 그대로 노출되는 공개 키다(비밀키 아님).
+ * 카카오 디벨로퍼스 > 앱 > 플랫폼 > Web 에 이 사이트 도메인이 등록되어 있어야
+ * 실제 공유 창이 열린다.
+ */
+const KAKAO_JS_KEY = process.env.NEXT_PUBLIC_KAKAO_JS_KEY || '6db01a6a14725138a28bf18da4c1c44a';
+const KAKAO_SDK_SRC = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js';
+
+type KakaoSdk = {
+  isInitialized: () => boolean;
+  init: (jsKey: string) => void;
+  Share?: { sendDefault: (settings: unknown) => void };
+};
+
+declare global {
+  interface Window {
+    Kakao?: KakaoSdk;
+  }
+}
+
+/** SDK 가 준비될 때까지 기다린다. 레이아웃 스크립트가 아직이면 직접 한 번 더 싣는다. */
+function ensureKakaoSdk(timeoutMs = 5000): Promise<KakaoSdk | null> {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined') {
+      resolve(null);
+      return;
+    }
+
+    const ready = (): KakaoSdk | null =>
+      window.Kakao && typeof window.Kakao.init === 'function' && window.Kakao.Share
+        ? window.Kakao
+        : null;
+
+    const already = ready();
+    if (already) {
+      resolve(already);
+      return;
+    }
+
+    if (!document.querySelector('script[src*="kakao_js_sdk"]')) {
+      const script = document.createElement('script');
+      script.src = KAKAO_SDK_SRC;
+      script.async = true;
+      script.setAttribute('data-kakao-sdk', 'fallback');
+      document.head.appendChild(script);
+    }
+
+    const startedAt = Date.now();
+    const timer = window.setInterval(() => {
+      const sdk = ready();
+      if (sdk) {
+        window.clearInterval(timer);
+        resolve(sdk);
+        return;
+      }
+      if (Date.now() - startedAt > timeoutMs) {
+        window.clearInterval(timer);
+        resolve(null);
+      }
+    }, 120);
+  });
+}
+
+/** 카톡 설명란·버튼에 들어갈 한 줄 텍스트로 다듬는다. */
+function clampText(text: string, max: number): string {
+  const flat = text.replace(/\s+/g, ' ').trim();
+  if (flat.length <= max) return flat;
+  return `${flat.slice(0, max - 1).trimEnd()}…`;
+}
+
 export default function CardDeck({ cards, lang }: CardDeckProps) {
   const isKo = lang === 'ko';
   const [selectedCat, setSelectedCat] = useState<string>('all');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [kakaoBusy, setKakaoBusy] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('deck');
   const deckRef = useRef<HTMLDivElement>(null);
   const backScrollRef = useRef<HTMLDivElement>(null);
@@ -143,6 +215,22 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
       backScrollRef.current.scrollTop = 0;
     }
   }, [currentIndex, isFlipped]);
+
+  // SDK 가 준비되는 대로 Kakao.init 까지 끝내 둔다(첫 공유 때 바로 열리도록).
+  useEffect(() => {
+    let cancelled = false;
+    ensureKakaoSdk().then((kakao) => {
+      if (!kakao || cancelled) return;
+      try {
+        if (!kakao.isInitialized()) kakao.init(KAKAO_JS_KEY);
+      } catch {
+        /* 키·도메인 설정 문제로 init 이 막혀도 링크 공유는 그대로 동작한다 */
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filteredCards = useMemo(
     () => (selectedCat === 'all' ? cards : cards.filter((c) => c.categorySlug === selectedCat)),
@@ -245,9 +333,56 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
       ? `${window.location.origin.replace('://lessregret.life', '://www.lessregret.life')}/${lang}/card/${card.id}`
       : `${SITE_URL}/${lang}/card/${card.id}`;
 
-  const handleShare = async (event: React.MouseEvent) => {
+  const handleShare = async (event?: React.MouseEvent) => {
+    event?.preventDefault();
+    event?.stopPropagation();
+    await shareLink();
+  };
+
+  /** 카카오톡 피드 카드 한 뭉치로 공유한다. SDK 가 없거나 예외가 나면 링크 공유로 넘긴다. */
+  const handleKakaoShare = async (event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
+    if (kakaoBusy) return;
+    setKakaoBusy(true);
+
+    try {
+      const kakao = await ensureKakaoSdk();
+      if (!kakao || !kakao.Share) {
+        await shareLink();
+        return;
+      }
+      if (!kakao.isInitialized()) kakao.init(KAKAO_JS_KEY);
+
+      const kakaoTitle = clampText((isKo ? card.title : card.titleEn).replace(/\n/g, ' '), 60);
+      const kakaoDescription = clampText(quoteOf(card, lang) || storyOf(card, lang), 80);
+      const link = { mobileWebUrl: shareUrl, webUrl: shareUrl };
+
+      kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: kakaoTitle,
+          description: kakaoDescription,
+          // non-www → www 308 리다이렉트가 없는 정적 OG 이미지(1200×630 PNG)
+          imageUrl: `${SITE_URL}/${lang}/card/${card.id}/opengraph-image/card`,
+          link,
+        },
+        buttons: [
+          {
+            title: isKo ? '카드 읽기' : 'Read card',
+            link,
+          },
+        ],
+      });
+    } catch {
+      await shareLink();
+    } finally {
+      setKakaoBusy(false);
+    }
+  };
+
+  /** 링크 공유 — navigator.share 가 있으면 시스템 공유시트, 없으면 클립보드 복사. */
+  const shareLink = async () => {
     const shareTitle = isKo
       ? `후회가 적은 삶 · ${card.title.replace('\n', ' ')}`
       : `Less Regret · ${card.titleEn.replace('\n', ' ')}`;
@@ -401,12 +536,12 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
               <ArrowRight className="w-5 h-5" />
             </button>
 
-            {/* 2단계 플립 카드 */}
-            <div className="perspective-1000 w-full">
+            {/* 2단계 카드 — 앞면은 고정 비율, 뒷면은 본문 높이만큼 자연스럽게 늘어난다.
+                3D preserve-3d 레이어 안에 내부 스크롤 박스를 두면 모바일 터치 스크롤이
+                먹통이 되므로 뒷면은 3D·고정높이·내부 스크롤을 모두 걷어냈다. */}
+            <div className="w-full">
               <div
-                className={`relative w-full aspect-[420/650] max-h-[660px] transform-style-3d transition-transform duration-500 ${
-                  isFlipped ? 'rotate-y-180' : ''
-                }`}
+                className={`relative w-full ${isFlipped ? '' : 'aspect-[420/650] max-h-[660px]'}`}
               >
                 {/* ── 앞면: 후킹 + 최소 출처 ── */}
                 <div
@@ -422,10 +557,8 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
                       setIsFlipped(true);
                     }
                   }}
-                  className={`absolute inset-0 w-full h-full rounded-[22px] backface-hidden overflow-hidden border shadow-[0_18px_50px_-24px_rgba(26,24,22,0.55)] focus:outline-none focus-visible:ring-2 focus-visible:ring-accentGold transition-all duration-300 ${
-                    isFlipped
-                      ? 'pointer-events-none select-none invisible opacity-0 z-0'
-                      : 'pointer-events-auto visible opacity-100 z-10 cursor-pointer'
+                  className={`absolute inset-0 w-full h-full rounded-[22px] overflow-hidden border shadow-[0_18px_50px_-24px_rgba(26,24,22,0.55)] focus:outline-none focus-visible:ring-2 focus-visible:ring-accentGold ${
+                    isFlipped ? 'hidden' : 'block cursor-pointer'
                   }`}
                   style={{
                     background: frontBackground,
@@ -487,12 +620,13 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
                   </div>
                 </div>
 
-                {/* ── 뒷면: 스토리 + 인용 + 실천 ── */}
+                {/* ── 뒷면: 스토리 + 인용 + 실천
+                    본문 높이만큼 늘어나고 스크롤은 브라우저 전체 화면이 맡는다(내부 스크롤 없음). ── */}
                 <div
-                  className={`absolute inset-0 w-full h-full rounded-[22px] backface-hidden rotate-y-180 bg-paper border border-borderSoft shadow-[0_18px_50px_-24px_rgba(26,24,22,0.45)] overflow-hidden flex flex-col transition-all duration-300 ${
+                  className={`rounded-[22px] bg-paper border border-borderSoft shadow-[0_18px_50px_-24px_rgba(26,24,22,0.45)] flex flex-col ${
                     isFlipped
-                      ? 'pointer-events-auto visible opacity-100 z-10'
-                      : 'pointer-events-none select-none invisible opacity-0 z-0'
+                      ? 'animate-card-in relative w-full min-h-[520px] overflow-visible'
+                      : 'hidden'
                   }`}
                   aria-hidden={!isFlipped}
                 >
@@ -505,11 +639,7 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
                     </span>
                   </div>
 
-                  <div
-                    ref={backScrollRef}
-                    className="flex-1 overflow-y-auto overscroll-contain px-5 sm:px-6 py-4 touch-pan-y"
-                    style={{ WebkitOverflowScrolling: 'touch' }}
-                  >
+                  <div ref={backScrollRef} className="flex-1 px-5 sm:px-6 py-4">
                     <h3 className="font-serif text-[18px] sm:text-[19px] leading-snug font-semibold text-ink mb-3 whitespace-pre-line">
                       {titleOf(card, lang)}
                     </h3>
@@ -581,42 +711,57 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
                     </div>
                   </div>
 
-                  <div className="shrink-0 px-5 py-3 border-t border-borderSoft/70 flex items-center justify-between gap-2 bg-paper">
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => setIsFlipped(false)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11.5px] text-inkMuted hover:bg-paperMuted transition-colors"
-                      >
-                        <RotateCcw className="w-3.5 h-3.5" />
-                        {isKo ? '앞면' : 'Back'}
-                      </button>
-                      <Link
-                        href={`/${lang}/card/${card.id}`}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11.5px] text-inkMuted hover:bg-paperMuted transition-colors"
-                      >
-                        {isKo ? '전체 보기' : 'Full page'}
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                      </Link>
-                    </div>
+                  <div className="shrink-0 px-4 sm:px-5 pt-2.5 pb-3 border-t border-borderSoft/70 bg-paper">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setIsFlipped(false)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11.5px] text-inkMuted hover:bg-paperMuted transition-colors"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          {isKo ? '앞면' : 'Back'}
+                        </button>
+                        <Link
+                          href={`/${lang}/card/${card.id}`}
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[11.5px] text-inkMuted hover:bg-paperMuted transition-colors"
+                        >
+                          {isKo ? '전체 보기' : 'Full page'}
+                          <ArrowUpRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
 
-                    <button
-                      type="button"
-                      onClick={handleShare}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11.5px] font-medium bg-ink text-paper hover:bg-ink/90 active:scale-95 transition-all"
-                    >
-                      {copied ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-accentGold" />
-                          {isKo ? '링크 복사됨' : 'Link copied'}
-                        </>
-                      ) : (
-                        <>
-                          <Share2 className="w-3.5 h-3.5" />
-                          {isKo ? '공유하기' : 'Share'}
-                        </>
-                      )}
-                    </button>
+                      <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-1.5">
+                        <button
+                          type="button"
+                          onClick={handleKakaoShare}
+                          disabled={kakaoBusy}
+                          aria-label={isKo ? '카카오톡으로 공유' : 'Share on KakaoTalk'}
+                          className="inline-flex items-center justify-center gap-1.5 px-3 py-[7px] rounded-full text-[11.5px] font-semibold bg-[#FEE500] text-[#3C1E1E] hover:bg-[#F7DC00] active:scale-95 disabled:opacity-60 transition-all"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          {isKo ? '카톡 공유' : 'KakaoTalk'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleShare}
+                          aria-label={isKo ? '링크 공유' : 'Share link'}
+                          className="inline-flex items-center justify-center gap-1.5 px-3 py-[7px] rounded-full text-[11.5px] font-medium bg-ink text-paper hover:bg-ink/90 active:scale-95 transition-all"
+                        >
+                          {copied ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-accentGold" />
+                              {isKo ? '링크 복사됨' : 'Link copied'}
+                            </>
+                          ) : (
+                            <>
+                              <Share2 className="w-3.5 h-3.5" />
+                              {isKo ? '링크 공유' : 'Share link'}
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
