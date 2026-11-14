@@ -31,7 +31,7 @@ app/
   sitemap.ts                 ko/en + 카드 134개 = 136 URL
   robots.ts
 components/
-  CardDeck.tsx               6대 카테고리 탭 · 2단계 플립 · 공유 버튼 · PC 덱/그리드 보기
+  CardDeck.tsx               6대 카테고리 탭 · 2단계 카드(앞면 고정비율/뒷면 자연높이) · 카톡·링크 공유 · PC 덱/그리드 보기
   SiteHeader.tsx             Less Regret 로고(0.18em 간격) + 언어 전환
 lib/
   categories.ts              6대 카테고리 정의 (slug·한/영·톤)
@@ -44,6 +44,15 @@ scripts/
   check-cards.mjs            빌드 전 데이터 검증 (npm run check:cards)
 public/images/               챕터별 점묘 배경(bg-career·family·health·self, 부부) + 육필 편지 원본
 ```
+
+## 카카오톡 공유 · 카드 넘김 방식
+
+- 공식 Kakao JS SDK v2(`https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js`)를 `app/[lang]/layout.tsx` 에서 `next/script strategy="afterInteractive"` 로 싣고, `CardDeck` 가 마운트될 때 `Kakao.init()` 까지 끝내 둔다. 그래서 첫 탭에서 곧바로 공유 창이 열린다.
+- 카드 뒷면 하단은 **[카톡 공유]**(피드 카드 1뭉치 — 제목·인용 한 줄·카드 OG 이미지·[카드 읽기] 버튼)와 **[링크 공유]**(`navigator.share` → 실패 시 클립보드 복사) 두 개다. 모바일 360px 에서는 `앞면·전체 보기` 한 줄, 두 공유 버튼이 반씩 나누는 두 번째 줄로 놓인다.
+- SDK 로드 실패·미등록 도메인·예외가 나면 카톡 공유는 링크 공유로 자동 폴백한다.
+- JavaScript 키는 웹에 노출되는 공개 키다: `NEXT_PUBLIC_KAKAO_JS_KEY` 환경변수로 바꿀 수 있고, 없으면 코드 기본값(`6db01a6a14725138a28bf18da4c1c44a`)을 쓴다.
+- **카카오 디벨로퍼스 > 내 앱 > 플랫폼 > Web 에 `https://www.lessregret.life`(과 Vercel 프리뷰 도메인)을 등록해야** 실제 카톡 공유 창이 뜬다. 이 등록이 빠지면 SDK 가 오류를 내고 링크 공유로 폴백된다.
+- 카드는 3D 플립(`rotateY` + `preserve-3d`)을 쓰지 않는다. 3D 레이어 안의 내부 스크롤 박스가 모바일 터치에서 먹통이 되어, 앞면은 고정 비율, 뒷면은 본문 높이만큼 늘어나는 일반 문서 흐름으로 두고 스크롤은 브라우저 전체 화면이 맡는다(전환은 짧은 페이드업).
 
 ## OG 이미지 · 파비콘
 
