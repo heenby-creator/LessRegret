@@ -472,14 +472,13 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
                     </div>
 
                     <div
-                      className="mt-auto -mx-6 -mb-6 sm:-mx-7 sm:-mb-7 px-6 sm:px-7 py-4 flex items-center justify-between text-[11.5px]"
+                      className="mt-auto -mx-6 -mb-6 sm:-mx-7 sm:-mb-7 px-6 sm:px-7 py-4 flex items-center justify-end text-[11.5px]"
                       style={{
                         borderTop: `1px solid ${palette.border}`,
                         color: palette.muted,
                         background: photo ? 'rgba(253,250,240,0.92)' : 'transparent',
                       }}
                     >
-                      <span>{isKo ? '눌러서 이야기 읽기' : 'Tap to read the story'}</span>
                       <span className="inline-flex items-center gap-1" style={{ color: category.accent }}>
                         {isKo ? '펼치기' : 'Open'}
                         <ArrowRight className="w-3.5 h-3.5" />
