@@ -3,6 +3,7 @@ import Script from 'next/script';
 import '../globals.css';
 import SiteHeader from '@/components/SiteHeader';
 import { SITE_URL } from '@/lib/categories';
+import { CARD_COUNT, countInEnglish } from '@/lib/cards';
 
 /**
  * 이 레이아웃이 사이트의 루트 레이아웃(<html>/<body>)이다.
@@ -19,18 +20,19 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+// 카드 수는 data/cards.json 에서 계산한다 (67 → 72 → … 로 늘어도 문구가 따라간다).
+const COUNT_EN = countInEnglish(CARD_COUNT).replace(/^./, (c) => c.toUpperCase());
+
 const META = {
   ko: {
-    title: '후회가 적은 삶 — 67장의 카드',
-    description:
-      '살아본 사람들이 먼저 후회한 67가지. 한 장씩 넘기며 오늘 할 수 있는 작은 실천을 만나보세요.',
-    ogDescription: '67장의 카드로 만나는, 후회를 줄이는 가장 구체적인 방법.',
+    title: `후회가 적은 삶 — ${CARD_COUNT}장의 카드`,
+    description: `살아본 사람들이 먼저 후회한 ${CARD_COUNT}가지. 한 장씩 넘기며 오늘 할 수 있는 작은 실천을 만나보세요.`,
+    ogDescription: `${CARD_COUNT}장의 카드로 만나는, 후회를 줄이는 가장 구체적인 방법.`,
   },
   en: {
-    title: 'Less Regret — 67 cards',
-    description:
-      'Sixty-seven regrets people named at the end. Flip one card at a time and leave with one small thing to do today.',
-    ogDescription: 'Sixty-seven cards on the regrets people name last — and the one small thing to do today.',
+    title: `Less Regret — ${CARD_COUNT} cards`,
+    description: `${COUNT_EN} regrets people named at the end. Flip one card at a time and leave with one small thing to do today.`,
+    ogDescription: `${COUNT_EN} cards on the regrets people name last — and the one small thing to do today.`,
   },
 } as const;
 

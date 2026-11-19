@@ -32,8 +32,8 @@ export interface Card {
   artifactPhotoCaptionEn?: string;
 }
 
-/** 카드 ID는 두 자리 숫자만 쓴다 ("01" ~ "67"). */
-export const CARD_ID_PATTERN = /^\d{2}$/;
+/** 카드 ID는 숫자만 쓴다 ("01", "02", …). 카드가 100장을 넘으면 세 자리("100")도 허용한다. */
+export const CARD_ID_PATTERN = /^\d{2,3}$/;
 
 /** 화면에 그리는 데 필요한 텍스트만 모은 타입 (클라이언트로 넘기는 payload). */
 export type CardText = Pick<
@@ -95,6 +95,23 @@ export function toDeckCards(list: Card[] = cards): CardText[] {
 }
 
 export const CARD_COUNT = cards.length;
+
+const EN_ONES = [
+  'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
+  'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen',
+  'seventeen', 'eighteen', 'nineteen',
+];
+const EN_TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+/** 영문 메타데이터에 쓰는 카드 수 표기 (1~99는 영단어, 그 밖은 숫자). */
+export function countInEnglish(n: number): string {
+  if (n >= 0 && n < 20) return EN_ONES[n];
+  if (n >= 20 && n < 100) return `${EN_TENS[Math.floor(n / 10)]}${n % 10 ? `-${EN_ONES[n % 10]}` : ''}`;
+  return String(n);
+}
+
+/** 카드 번호의 마지막 값 ("01"~"72"). */
+export const CARD_LAST_ID = String(CARD_COUNT).padStart(2, '0');
 
 export function getCard(id: string): Card | undefined {
   return cards.find((card) => card.id === id);
@@ -167,7 +184,7 @@ export function neighboursOf(card: Card): { prev: Card; next: Card } {
  */
 export function validateCards(list: Card[] = cards): string[] {
   const problems: string[] = [];
-  if (list.length !== 67) problems.push(`카드 수가 67장이 아니다: ${list.length}`);
+  if (list.length < 1) problems.push('카드가 한 장도 없다');
 
   const ids = new Set<string>();
   const titles = new Set<string>();
@@ -215,6 +232,19 @@ export function validateCards(list: Card[] = cards): string[] {
     if (titlesEn.has(card.titleEn)) problems.push(`${label}: 영문 제목 중복`);
     titles.add(card.title);
     titlesEn.add(card.titleEn);
+  }
+
+  // 번호는 01부터 카드 수까지 빈틈없이 이어져야 한다 (02, 03 … 순서로 추가).
+  const lastId = String(list.length).padStart(2, '0');
+  const missing: string[] = [];
+  for (let i = 1; i <= list.length; i += 1) {
+    const expectedId = String(i).padStart(2, '0');
+    if (!ids.has(expectedId)) missing.push(expectedId);
+  }
+  if (missing.length) {
+    problems.push(
+      `카드 번호가 01부터 ${lastId}까지 이어지지 않는다 (빠진 번호: ${missing.slice(0, 5).join(', ')}${missing.length > 5 ? ' 외' : ''})`,
+    );
   }
 
   return problems;

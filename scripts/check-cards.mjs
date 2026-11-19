@@ -2,7 +2,7 @@
 /**
  * data/cards.json 무결성 검사.
  * 실행: npm run check:cards
- * 67장 · ID 두 자리 숫자 · 한/영 필드 분리 · 빈 인용 없음 을 보증한다.
+ * 카드 수(자동) · ID 두 자리 숫자·연속 · 한/영 필드 분리 · 빈 인용 없음 을 보증한다.
  */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -31,7 +31,7 @@ const EN_FIELDS = ['categoryEn', 'titleEn', 'storyEn', 'quoteEn', 'quoteAttrEn',
 const HANGUL = /[가-힣]/;
 
 const problems = [];
-if (cards.length < 67) problems.push(`카드 수 ${cards.length} (최소 67장 이상이어야 함)`);
+if (cards.length < 1) problems.push('카드가 한 장도 없다');
 
 const ids = new Set();
 const titles = new Set();
@@ -39,7 +39,7 @@ const titlesEn = new Set();
 
 for (const card of cards) {
   const id = card.id ?? '(없음)';
-  if (!/^\d{2}$/.test(id)) problems.push(`${id}: ID는 두 자리 숫자여야 함`);
+  if (!/^\d{2,3}$/.test(id)) problems.push(`${id}: ID는 두 자리(100장 이상은 세 자리) 숫자여야 함`);
   if (ids.has(id)) problems.push(`${id}: ID 중복`);
   ids.add(id);
 
@@ -73,13 +73,26 @@ for (const card of cards) {
   if (!/^https:\/\//.test(card.sourceUrl ?? '')) problems.push(`${id}: 출처 URL 형식 오류`);
 }
 
+// 번호는 01부터 카드 수까지 빈틈없이 이어져야 한다.
+const missing = [];
+for (let i = 1; i <= cards.length; i += 1) {
+  const expectedId = String(i).padStart(2, '0');
+  if (!ids.has(expectedId)) missing.push(expectedId);
+}
+if (missing.length) {
+  problems.push(
+    `카드 번호가 01–${String(cards.length).padStart(2, '0')} 사이에서 이어지지 않음 (빠진 번호: ${missing.slice(0, 5).join(', ')}${missing.length > 5 ? ' 외' : ''})`,
+  );
+}
+
 if (problems.length) {
   console.error(`❌ 카드 검증 실패 (${problems.length}건)`);
   for (const p of problems) console.error('  -', p);
   process.exit(1);
 }
 
+const lastId = String(cards.length).padStart(2, '0');
 const counts = {};
 for (const card of cards) counts[card.category] = (counts[card.category] ?? 0) + 1;
-console.log(`✅ 카드 ${cards.length}장 · ID 01–67 · 한/영 필드 분리 검증 통과`);
+console.log(`✅ 카드 ${cards.length}장 · ID 01–${lastId} · 한/영 필드 분리 검증 통과`);
 console.log('   ' + Object.entries(counts).map(([k, v]) => `${k} ${v}`).join(' · '));

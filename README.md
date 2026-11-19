@@ -1,12 +1,12 @@
 # Less Regret — 후회가 적은 삶
 
-67장의 카드로 만나는 인생 후회 데이터. 카드 앞면은 후킹, 뒷면은 스토리·인용·오늘의 실천.
+72장의 카드로 만나는 인생 후회 데이터. 카드 앞면은 후킹, 뒷면은 스토리·인용·오늘의 실천.
 한국어(`/ko`)와 영어(`/en`)를 완전히 분리해 렌더링한다.
 
 ## 스택
 
 - Next.js 14 (App Router) · TypeScript · Tailwind CSS
-- 정적 생성(SSG): 카드 67장 × 2개 언어 = 134개 카드 페이지
+- 정적 생성(SSG): 카드 72장 × 2개 언어 = 144개 카드 페이지
 
 ## 시작하기
 
@@ -28,7 +28,7 @@ app/
   [lang]/card/[id]/opengraph-image.tsx 카드 공유 이미지 (사진이 있는 카드는 사진 포함)
   [lang]/not-found.tsx       404
   icon.tsx · apple-icon.tsx · favicon.ico   파비콘
-  sitemap.ts                 ko/en + 카드 134개 = 136 URL
+  sitemap.ts                 ko/en + 카드 144개 = 146 URL
   robots.ts
 components/
   CardDeck.tsx               6대 카테고리 탭 · 2단계 카드(앞면 고정비율/뒷면 자연높이) · 카톡·링크 공유 · PC 덱/그리드 보기
@@ -39,7 +39,7 @@ lib/
   og.ts                      OG 이미지용 폰트 로더·색·헬퍼
 assets/og-fonts/             OG 이미지용 Noto Serif KR 서브셋 (400·600)
 data/
-  cards.json                 67장 카드 원본 (id "01"~"67")
+  cards.json                 72장 카드 원본 (id "01"~"72" — 카드 수는 이 파일이 기준)
 scripts/
   check-cards.mjs            빌드 전 데이터 검증 (npm run check:cards)
 public/images/               챕터별 점묘 배경(bg-career·family·health·self, 부부) + 육필 편지 원본
@@ -63,11 +63,11 @@ public/images/               챕터별 점묘 배경(bg-career·family·health·
 
 ## 카드 데이터 규칙
 
-- `id`: 두 자리 숫자 `"01"`~`"67"` (`^\d{2}$`)
+- `id`: 두 자리 숫자 `"01"`~`"72"` (`^\d{2}$`, 100장 이상은 세 자리) — 01부터 빈틈없이 이어져야 함
 - `categorySlug`: `love` · `work` · `money` · `family` · `body` · `self`
 - `title` / `titleEn`: 두 줄 후킹 (`\n` 한 번). 교훈조 금지, 결핍·불안·갈등을 건드리는 문장
 - `storyKo` / `storyEn`: 나이·상황·대화·후회의 디테일이 있는 미니 서사
-- `quoteKo` / `quoteEn`: 67장 전부 채움 (빈 인용 없음)
+- `quoteKo` / `quoteEn`: 전체 카드 채움 (빈 인용 없음)
 - `oneLiner` / `oneLinerEn`: 오늘 바로 하는 실천 한 문장
 - `actionTagsKo` / `actionTagsEn`: 3개씩, 영문판은 100% 영어
 - `sourceShortKo` / `sourceShortEn`: 카드 앞면에 보이는 짧은 출처 (URL 노출 없음)
@@ -80,13 +80,13 @@ public/images/               챕터별 점묘 배경(bg-career·family·health·
 | slug | 한국어 | English | 장수 |
 |---|---|---|---|
 | love | 사랑·결혼 | Marriage & Love | 16 |
-| work | 일·커리어 | Work & Career | 8 |
-| money | 돈·자산 | Money & Wealth | 8 |
+| work | 일·커리어 | Work & Career | 10 |
+| money | 돈·자산 | Money & Wealth | 10 |
 | family | 가족·친구 | Family & Friends | 15 |
-| body | 몸·마음 | Body & Mind | 8 |
+| body | 몸·마음 | Body & Mind | 9 |
 | self | 나·시간 | Self & Time | 12 |
 
-58번 이후 카드는 공공누리(KOGL) 제1유형 전국 성인문해교육 시화전 수상작을 국가문해교육센터 출처 표기와 함께 수록한 것이다(59~67번 9장은 2026-11 추가).
+58번 이후 카드는 공공누리(KOGL) 제1유형 전국 성인문해교육 시화전 수상작을 국가문해교육센터 출처 표기와 함께 수록한 것이다(59~67번 9장은 2026-11 추가). 68~72번 5장(일·커리어 2 · 돈·자산 2 · 몸·마음 1)은 2026-11-19 1회차 추가분이며, 3장은 20·30대 타깃이다.
 
 ## 배포 시 주의 (기존 저장소에서 올릴 때)
 
