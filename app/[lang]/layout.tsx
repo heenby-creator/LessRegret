@@ -71,6 +71,8 @@ export function generateMetadata({ params }: { params: { lang: string } }): Meta
       languages: { ko: `${SITE_URL}/ko`, en: `${SITE_URL}/en` },
     },
     robots: { index: true, follow: true },
+    // Google Search Console 소유권 확인 — <meta name="google-site-verification"> 로 출력된다.
+    verification: { google: 'tBX6l4tZ6fH8Y7xAFRfk7LaH1YyEAU0ovvoUBeeMU8o' },
   };
 }
 
