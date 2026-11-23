@@ -110,7 +110,7 @@ export function countInEnglish(n: number): string {
   return String(n);
 }
 
-/** 카드 번호의 마지막 값 ("01"~"72"). */
+/** 카드 번호의 마지막 값 ("01"~"77"). */
 export const CARD_LAST_ID = String(CARD_COUNT).padStart(2, '0');
 
 export function getCard(id: string): Card | undefined {
