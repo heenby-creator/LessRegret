@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import LanguageSwitch from '@/components/LanguageSwitch';
 
 interface SiteHeaderProps {
   lang: string;
@@ -23,27 +24,7 @@ export default function SiteHeader({ lang }: SiteHeaderProps) {
           </span>
         </Link>
 
-        <nav className="flex items-center gap-1.5 text-[11.5px] font-medium" aria-label="Language">
-          <Link
-            href="/ko"
-            className={`px-2.5 py-1 rounded transition-colors ${
-              isKo ? 'bg-ink text-paper' : 'text-inkMuted hover:text-ink'
-            }`}
-            aria-current={isKo ? 'page' : undefined}
-          >
-            KO
-          </Link>
-          <span className="text-borderSoft">/</span>
-          <Link
-            href="/en"
-            className={`px-2.5 py-1 rounded transition-colors ${
-              !isKo ? 'bg-ink text-paper' : 'text-inkMuted hover:text-ink'
-            }`}
-            aria-current={!isKo ? 'page' : undefined}
-          >
-            EN
-          </Link>
-        </nav>
+        <LanguageSwitch lang={lang} />
       </div>
     </header>
   );

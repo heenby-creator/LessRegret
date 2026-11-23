@@ -13,6 +13,7 @@ import {
   Rows3,
   Share2,
 } from 'lucide-react';
+import { trackEvent } from '@/lib/analytics';
 import { CATEGORIES, CATEGORY_BY_SLUG, SITE_URL, type Category } from '@/lib/categories';
 import {
   type CardText,
@@ -258,7 +259,13 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
     setSelectedCat(slug);
     setCurrentIndex(0);
     setIsFlipped(false);
+    trackEvent('filter_category', { category: slug, lang });
   };
+
+  /** 카드가 펼쳐질 때 한 번 GA4 로 알린다(앞면 클릭·키보드·그리드). */
+  const trackCardExpand = useCallback(() => {
+    trackEvent('card_expand', { card_id: card.id, category: card.categorySlug, lang });
+  }, [card.id, card.categorySlug, lang]);
 
   const nextCard = useCallback(() => {
     setIsFlipped(false);
@@ -270,10 +277,17 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
     setCurrentIndex((prev) => (prev - 1 + filteredCards.length) % filteredCards.length);
   }, [filteredCards.length]);
 
-  const toggleFlip = useCallback(() => setIsFlipped((flipped) => !flipped), []);
+  const toggleFlip = useCallback(() => {
+    if (!isFlipped) trackCardExpand();
+    setIsFlipped((flipped) => !flipped);
+  }, [isFlipped, trackCardExpand]);
 
   /** 그리드에서 카드를 고르면 덱으로 넘어가 그 카드의 뒷면을 펼친다. */
   const openInDeck = (index: number) => {
+    const picked = filteredCards[index];
+    if (picked) {
+      trackEvent('card_expand', { card_id: picked.id, category: picked.categorySlug, lang });
+    }
     setCurrentIndex(index);
     setIsFlipped(true);
     setViewMode('deck');
@@ -339,6 +353,8 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
   const handleShare = async (event?: React.MouseEvent) => {
     event?.preventDefault();
     event?.stopPropagation();
+    // 카톡 공유가 SDK 문제로 이 함수(shareLink)로 떨어질 때는 share_kakao 만 남긴다.
+    trackEvent('share_link', { card_id: card.id, lang });
     await shareLink();
   };
 
@@ -348,6 +364,7 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
     event.stopPropagation();
     if (kakaoBusy) return;
     setKakaoBusy(true);
+    trackEvent('share_kakao', { card_id: card.id, lang });
 
     try {
       const kakao = await ensureKakaoSdk();
@@ -557,12 +574,17 @@ export default function CardDeck({ cards, lang }: CardDeckProps) {
                   tabIndex={isFlipped ? -1 : 0}
                   aria-label={isKo ? '카드를 눌러 이야기 보기' : 'Tap to read the story'}
                   aria-hidden={isFlipped}
-                  onClick={() => !isFlipped && setIsFlipped(true)}
+                  onClick={() => {
+                    if (isFlipped) return;
+                    setIsFlipped(true);
+                    trackCardExpand();
+                  }}
                   onKeyDown={(event) => {
                     if (!isFlipped && (event.key === 'Enter' || event.key === ' ')) {
                       event.preventDefault();
                       event.stopPropagation();
                       setIsFlipped(true);
+                      trackCardExpand();
                     }
                   }}
                   className={`absolute inset-0 w-full h-full rounded-[22px] overflow-hidden border shadow-[0_18px_50px_-24px_rgba(26,24,22,0.55)] focus:outline-none focus-visible:ring-2 focus-visible:ring-accentGold ${

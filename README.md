@@ -54,6 +54,17 @@ public/images/               챕터별 점묘 배경(bg-career·family·health·
 - **카카오 디벨로퍼스 > 내 앱 > 플랫폼 > Web 에 `https://www.lessregret.life`(과 Vercel 프리뷰 도메인)을 등록해야** 실제 카톡 공유 창이 뜬다. 이 등록이 빠지면 SDK 가 오류를 내고 링크 공유로 폴백된다.
 - 카드는 3D 플립(`rotateY` + `preserve-3d`)을 쓰지 않는다. 3D 레이어 안의 내부 스크롤 박스가 모바일 터치에서 먹통이 되어, 앞면은 고정 비율, 뒷면은 본문 높이만큼 늘어나는 일반 문서 흐름으로 두고 스크롤은 브라우저 전체 화면이 맡는다(전환은 짧은 페이드업).
 
+## Google Analytics 4
+
+- 측정 ID: `G-SE97ZKG31K` (`lib/analytics.ts` 의 `GA_MEASUREMENT_ID`, `NEXT_PUBLIC_GA_ID` 환경변수로 교체 가능).
+- `app/[lang]/layout.tsx` 에서 `next/script strategy="afterInteractive"` 로 `gtag.js` 와 `gtag('config', …)` 를 모든 언어·카드 페이지에 싣는다.
+- 맞춤 이벤트는 `trackEvent(name, params)` 한 곳을 거친다(`typeof window` · `window.gtag` 가드). gtag 이 없거나 차단돼도 화면 동작은 그대로다.
+  - `card_expand` (`card_id`, `category`, `lang`) — 카드 펼치기(앞면 탭·Enter/Space·그리드에서 열기)
+  - `share_kakao` · `share_link` (`card_id`, `lang`) — 카톡 공유 / 링크 공유
+  - `filter_category` (`category`, `lang`) — 카테고리 필터(전체 포함)
+  - `switch_language` (`to_lang`) — 헤더 KO/EN 전환(실제로 바뀔 때만)
+- 새 이벤트를 늘리면 `lib/analytics.ts` 의 `AnalyticsEventMap` 에 모양을 먼저 추가한다(타입이 파라미터를 검사한다).
+
 ## OG 이미지 · 파비콘
 
 - `ImageResponse`(next/og, nodejs 런타임)로 1200×630 PNG를 만든다. 카드 이미지는 `generateImageMetadata` 로 카드별 alt 를 붙인다.

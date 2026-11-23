@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import '../globals.css';
 import SiteHeader from '@/components/SiteHeader';
+import { GA_MEASUREMENT_ID } from '@/lib/analytics';
 import { SITE_URL } from '@/lib/categories';
 import { CARD_COUNT, countInEnglish } from '@/lib/cards';
 
@@ -92,6 +93,18 @@ export default function LangLayout({
           href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600&family=Noto+Serif+KR:wght@300;400;500;600&display=swap"
           rel="stylesheet"
         />
+        {/* Google Analytics 4 — gtag.js. afterInteractive 라서 본문 렌더를 막지 않고,
+            모든 언어·카드 페이지에 한 번씩 실린다. */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_MEASUREMENT_ID}');`}
+        </Script>
         {/* 카카오톡 공유 — 공식 Kakao JS SDK v2. 공개용 JavaScript 키라 문서에 그대로 둔다. */}
         <Script
           src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js"
