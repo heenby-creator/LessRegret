@@ -21,7 +21,7 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-// 카드 수는 data/cards.json 에서 계산한다 (67 → 72 → 77 → 89 → … 로 늘어도 문구가 따라간다).
+// 카드 수는 data/cards.json 에서 계산한다 (67 → 72 → 77 → 89 → 100 → … 로 늘어도 문구가 따라간다).
 const COUNT_EN = countInEnglish(CARD_COUNT).replace(/^./, (c) => c.toUpperCase());
 
 const META = {
